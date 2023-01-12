@@ -8,6 +8,13 @@ You will need to set up a database for this web server template. Ideally, Postgr
 ## Commands
 
 #### [Flask Migrate commands](https://flask-migrate.readthedocs.io/en/latest/)
-`flask db init`
-`flask db current`
+These are the commands you'll be using the most often as you develop. I recommend you verify that your database is in the exact state you expect it to be after every step with SQL until you're reasonably certain about what's happening. Then you can move to every other step. Maybe.
+
+```
+flask db --help
+flask db init
+flask db current
+flask db upgrade
+flask db downgrade
+```
 ## Folder structure
