@@ -3,9 +3,16 @@ This is a starter template for a Flask Python backend that is ready for use in d
 ## Getting Started
 You will need to set up a database for this web server template. Ideally, PostgreSQL or MySQL and not SQLite. You will need to have PostgreSQL/MySQL installed in order to install and run the matching Python libraries and instantiate a `db` connection.
 
+1. Install a RDBMS
+2. Create a database
+3. Install [gunicorn](https://gunicorn.org/) (G-Unit Unicorn web server by 50 Cent)
+4. Install dependencies
+5. Start the server
+
 **Install your dependencies**
 
 Remember `npm install` from Zoom lecture? No? Well yeah, that was a thing!
+
 `pip install -r requirements.txt`
 
 ## Commands
