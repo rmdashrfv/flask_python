@@ -7,7 +7,7 @@ You will need to set up a database for this web server template. Ideally, Postgr
 2. Create a database
 3. Install [gunicorn](https://gunicorn.org/) (G-Unit Unicorn web server by 50 Cent)
 4. Install dependencies
-5. Start the server
+5. Start the server with `gunicorn app:app`
 
 **Install your dependencies**
 
@@ -15,6 +15,18 @@ Remember `npm install` from Zoom lecture? No? Well yeah, that was a thing!
 
 `pip install -r requirements.txt`
 
+## Gunicorn
+
+**Current setup**
+To start the server right after cloning this template run:
+
+`gunicorn app:app`
+
+**Customization**
+
+`gunicorn [WSGI_APP] [OPTIONS]`
+
+Where WSGI_APP is of the pattern `$(MODULE_NAME):$(VARIABLE_NAME)`. You can also do things like bind the host or set a custom port in case you're using the default (3000).
 ## Commands
 **Start the server**
 
