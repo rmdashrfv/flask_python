@@ -13,26 +13,24 @@ You will need to set up a database for this web server template. Ideally, Postgr
 
 Remember `npm install` from Zoom lecture? No? Well yeah, that was a thing!
 
-`pip install -r requirements.txt`
+`$ pip install -r requirements.txt`
 
 ## Gunicorn
 
 **Current setup**
+
 To start the server right after cloning this template run:
 
-`gunicorn app:app`
+`$ gunicorn app:app`
+
+You could also run `flask run` but this will not leverage the WSGI web server.
 
 **Customization**
 
 `gunicorn [WSGI_APP] [OPTIONS]`
 
 Where WSGI_APP is of the pattern `$(MODULE_NAME):$(VARIABLE_NAME)`. You can also do things like bind the host or set a custom port in case you're using the default (3000).
-## Commands
-**Start the server**
 
-You could run `flask run` but this will not leverage a WSGI web server.
-
-`gunicorn app:app`
 #### [Flask Migrate commands](https://flask-migrate.readthedocs.io/en/latest/)
 These are the commands you'll be using the most often as you develop. I recommend you verify that your database is in the exact state you expect it to be after every step with SQL until you're reasonably certain about what's happening. Then you can move to every other step. Maybe.
 
