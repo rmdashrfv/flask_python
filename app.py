@@ -3,7 +3,7 @@ from flask import Flask, send_file
 from flask_migrate import Migrate
 from flask_cors import CORS
 from config import Config
-from models import db
+from models import db, User
 
 app = Flask(__name__, static_folder='public')
 CORS(app, origins=['*'])
@@ -15,6 +15,9 @@ migrate = Migrate(app, db)
 def home():
     return send_file('welcome.html')
 
+@app.post('/users')
+def users():
+    return {}, 201
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=os.environ.get('PORT', 3000))
