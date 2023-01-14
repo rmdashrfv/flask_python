@@ -31,6 +31,23 @@ You could also run `flask run` but this will not leverage the WSGI web server.
 
 Where WSGI_APP is of the pattern `$(MODULE_NAME):$(VARIABLE_NAME)`. You can also do things like bind the host or set a custom port in case you're using the default (3000).
 
+### Connecting a Database
+
+#### 📃 SQLite
+Oh you don't care about deploying your project? Right this way 👇
+
+In `config.py` set the value of `SQLALCHEMY_DATABASE_URI` to be `sqlite:///development.sqlite3`. Then create a file in the root of the project called `development.sqlite3`. From here, you can call `flask db init` to get started. If anyone wants to use your application, you need to give them your physical address so that they can come to your house and use your computer on localhost 🏠
+
+#### 🐘 PostgreSQL
+Install PostgreSQL on Mac by running `brew install postgresql` (Linux instructions coming soon). When that finishes, you should be able to run `psql postgres` in your terminal. From here, you should create a database. I usually create a separate user within PostgreSQL and make the user the owner of that database, although it doesn't matter too _too_ much when you're running this on a machine only you have access to anyway.
+
+```
+CREATE DATABASE [database_name];
+ALTER DATABASE [database_name] OWNER TO [username]
+```
+
+You can then quit the psql shell by typing `\q`. Now set the value of `SQLALCHEMY_DATABASE_URI` to be `postgresql://[user]:[password]@localhost/[database_name]`. For example, if my username was `mikegpt` and my password was `burntheboats` and the name of the database I created above was flask_python_development, the value of my database URI would be: "postgresql://mikegpt:burntheboats@localhost/flask_python_development". You can now run `flask db init` and get started and you will be able to deploy your application more easily to platforms like Heroku, Render, or Fly.
+
 #### [Flask Migrate commands](https://flask-migrate.readthedocs.io/en/latest/)
 These are the commands you'll be using the most often as you develop. I recommend you verify that your database is in the exact state you expect it to be after every step with SQL until you're reasonably certain about what's happening. Then you can move to every other step. Maybe.
 
@@ -48,3 +65,11 @@ flask db downgrade
 3. Run `flask db upgrade` to apply the change to the database
 4. Made a mistake? Run `flask db downgrade` to reverse it
 ## App structure
+
+
+## SQLAlchemy Query Interface
+
+
+
+### Legacy vs Modern
+In order to make developers write more code, SQLAlchemy switched from a style that works like OOP to a style that works more like writing raw SQL in Python.
