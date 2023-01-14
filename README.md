@@ -46,7 +46,11 @@ CREATE DATABASE [database_name];
 ALTER DATABASE [database_name] OWNER TO [username]
 ```
 
-You can then quit the psql shell by typing `\q`. Now set the value of `SQLALCHEMY_DATABASE_URI` to be `postgresql://[user]:[password]@localhost/[database_name]`. For example, if my username was `mikegpt` and my password was `burntheboats` and the name of the database I created above was flask_python_development, the value of my database URI would be: "postgresql://mikegpt:burntheboats@localhost/flask_python_development". You can now run `flask db init` and get started and you will be able to deploy your application more easily to platforms like Heroku, Render, or Fly.
+You can then quit the psql shell by typing `\q`. Now set the value of `SQLALCHEMY_DATABASE_URI` to be `postgresql://[user]:[password]@localhost/[database_name]`. For example, if my username was `mikegpt` and my password was `burntheboats` and the name of the database I created above was flask_python_development, the value of my database URI would be: 
+
+`postgresql://mikegpt:burntheboats@localhost/flask_python_development`
+
+You can now run `flask db init` and get started and you will be able to deploy your application more easily to platforms like Heroku, Render, or Fly.
 
 #### [Flask Migrate commands](https://flask-migrate.readthedocs.io/en/latest/)
 These are the commands you'll be using the most often as you develop. I recommend you verify that your database is in the exact state you expect it to be after every step with SQL until you're reasonably certain about what's happening. Then you can move to every other step. Maybe.
