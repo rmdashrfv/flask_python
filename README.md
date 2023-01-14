@@ -79,7 +79,7 @@ In order to make developers write more code, SQLAlchemy switched from a style th
 
 Here is a list of useful methods in SQLAlchemy for interacting with the database:
 
-```
+```python
 # Return a single record
 Model.query.get(primary_key)
 Model.query.get_or_404(primary_key)
