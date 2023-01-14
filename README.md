@@ -73,7 +73,47 @@ flask db downgrade
 
 ## SQLAlchemy Query Interface
 
-
-
 ### Legacy vs Modern
-In order to make developers write more code, SQLAlchemy switched from a style that works like OOP to a style that works more like writing raw SQL in Python.
+In order to make developers write more code, SQLAlchemy switched from a style that works like OOP to a style that works more like writing raw SQL in Python. Writing more code provides you more flexibility and control over the query regardless of whether or not you need either of those things.
+
+
+Here is a list of useful methods in SQLAlchemy for interacting with the database:
+
+```
+# Return a single record
+Model.query.get(primary_key)
+Model.query.get_or_404(primary_key)
+
+# Returns all records in the table for this model
+Model.query.all()
+
+# Return all records that match the filter
+Model.query.filter_by(user_id=user.id)
+
+# Return the first record for this Model
+Model.query.first()
+Model.query.first_or_404()
+
+Returns n number of records from the Model table
+Model.query.limit(n)
+
+# Count the number of records in a table. Returns an integer
+Model.query.count()
+
+# Return a list of records ordered by a column name as a string
+Model.query.order_by('column')
+Model.query.paginate()
+
+# Update a single record in a table
+m = Model.query.get(id)
+m.email = new_email
+db.session.commit()
+
+# Update all records in this table simulatneously by using a dictionary object
+Model.query.update(dict)
+
+# Delete a record
+m = Model.query.get(id)
+db.session.delete()
+db.session.commit()
+```
