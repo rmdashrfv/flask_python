@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import expression
 from flask_migrate import Migrate
 
 db = SQLAlchemy() # create an instance of a database connection
@@ -12,7 +13,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    admin = db.Column(db.Boolean, server_default='f')
+    admin = db.Column(db.Boolean, server_default=expression.false(), nullable=True)
     posts = db.relationship('Post', backref='user', lazy=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
