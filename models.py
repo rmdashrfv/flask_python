@@ -12,7 +12,8 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.Integer, nullable=True)
+    admin = db.Column(db.Boolean, server_default='f')
+    posts = db.relationship('Post', backref='user', lazy=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
@@ -29,8 +30,34 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'posts': [post.to_dict() for post in Post.query.filter_by(user_id=self.id)],
             'created_at': self.created_at
         }
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String, nullable=True, server_default='published')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
+    def __init__(self, content):
+        self.content = content
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'content': self.content,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'user_id': self.user_id
+        }
+
+    def __repr__(self):
+        return f'<Post {self.id}>'

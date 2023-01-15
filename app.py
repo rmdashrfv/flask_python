@@ -3,7 +3,7 @@ from flask import Flask, send_file, request, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from config import Config
-from models import db, User
+from models import db, User, Post
 from pprint import pprint
 import platform
 
@@ -77,6 +77,13 @@ def delete_user(id):
         return jsonify(user.to_dict())
     else:
         return {'error': 'No user found'}, 404    
+
+
+@app.get('/posts/<int:id>')
+def show_post(id):
+    post = Post.query.get(id)
+    print(post.user)
+    return {}
 
 
 if __name__ == '__main__':
