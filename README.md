@@ -94,7 +94,7 @@ Model.query.filter_by(user_id=user.id)
 Model.query.first()
 Model.query.first_or_404()
 
-Returns n number of records from the Model table
+# Returns n number of records from the Model table
 Model.query.limit(n)
 
 # Count the number of records in a table. Returns an integer
