@@ -64,10 +64,9 @@ def all_users():
 @app.patch('/users/<int:id>')
 def update_user(id):
     user = User.query.get_or_404(id)
-    print(user)
-    user.username = request.form['username']
+    user.username = request.form['username'] # currently only updates the username. Add more as you see fit
     db.session.commit()
-    return jsonify({})
+    return jsonify(user.to_dict())
 
 
 @app.delete('/users/<int:id>')
@@ -87,42 +86,26 @@ def show_post(id):
     return jsonify(post.to_dict())
 
 
-@socketio.event
-def my_event(message):
-    print("RECEIVED", message)
-    emit('my response', {'data': 'got it!'})
-
-
-# @socketio.on('connect')
-# def handle_connect():
-#     emit('message', {'data': 'Connected'}, broadcast=True)
-
-
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     print('Client disconnected')
-
-@socketio.on("connect")
+@socketio.on('connect')
 def connected():
-    """event listener when client connects to the server"""
-    print(request.sid)
-    print("client has connected")
-    emit("connect", {"data": f"id: {request.sid} is connected"})
+    '''This function is an event listener that gets called when the client connects to the server'''
+    print(f'Client {request.sid} has connected')
+    emit('connect', {'data': f'id: {request.sid} is connected'})
 
 
 @socketio.on('data')
 def handle_message(data):
-    """event listener when client types a message"""
-    print("data from the front end: ", data)
-    emit("data", {'data': 'data', 'id': request.sid}, broadcast=True)
+    '''This function runs whenever a client sends a socket message to be broadcast'''
+    print(f'Message from Client {request.sid} : ', data)
+    emit('data', {'data': 'data', 'id': request.sid}, broadcast=True)
 
 
 @socketio.on("disconnect")
 def disconnected():
-    """event listener when client disconnects to the server"""
-    print("user disconnected")
-    emit("disconnect", f"user {request.sid} disconnected", broadcast=True)
+    '''This function is an event listener that gets called when the client disconnects from the server'''
+    print(f'Client {request.sid} has disconnected')
+    emit('disconnect', f'Client {request.sid} has disconnected', broadcast=True)
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='localhost', port=os.environ.get('PORT', 3000))
+    socketio.run(app, host='0.0.0.0', port=os.environ.get('PORT', 3000))

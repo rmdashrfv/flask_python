@@ -7,7 +7,7 @@ You will need to set up a database for this web server template. Ideally, Postgr
 2. Create a database
 3. Install [gunicorn](https://gunicorn.org/) (G-Unit Unicorn web server by 50 Cent)
 4. Install dependencies
-5. Start the server with `gunicorn app:app`
+5. Start the server with `gunicorn app:app` (If you are using WebSockets, you must run your server using `flask run --port=PORT`)
 
 **Install your dependencies**
 
@@ -23,7 +23,7 @@ To start the server right after cloning this template run:
 
 `$ gunicorn app:app`
 
-You could also run `flask run` but this will not leverage the WSGI web server.
+You could also run `flask run --port=PORT` but this will not leverage the WSGI web server. At this time, you will have to use the `flask run` command in order to leverage WebSockets in your project.
 
 **Customization**
 
