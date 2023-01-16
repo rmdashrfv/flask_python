@@ -5,6 +5,7 @@ from flask_cors import CORS
 from config import Config
 from models import db, User, Post
 from pprint import pprint
+from flask_socketio import SocketIO, emit
 import platform
 
 app = Flask(__name__, static_folder='public')
@@ -12,6 +13,7 @@ CORS(app, origins=['*'])
 app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 # In Rails, controller actions and routes are separate
 # Here in Flask, they are put together
@@ -82,9 +84,45 @@ def delete_user(id):
 @app.get('/posts/<int:id>')
 def show_post(id):
     post = Post.query.get(id)
-    print(post.user)
-    return {}
+    return jsonify(post.to_dict())
+
+
+@socketio.event
+def my_event(message):
+    print("RECEIVED", message)
+    emit('my response', {'data': 'got it!'})
+
+
+# @socketio.on('connect')
+# def handle_connect():
+#     emit('message', {'data': 'Connected'}, broadcast=True)
+
+
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     print('Client disconnected')
+
+@socketio.on("connect")
+def connected():
+    """event listener when client connects to the server"""
+    print(request.sid)
+    print("client has connected")
+    emit("connect", {"data": f"id: {request.sid} is connected"})
+
+
+@socketio.on('data')
+def handle_message(data):
+    """event listener when client types a message"""
+    print("data from the front end: ", data)
+    emit("data", {'data': 'data', 'id': request.sid}, broadcast=True)
+
+
+@socketio.on("disconnect")
+def disconnected():
+    """event listener when client disconnects to the server"""
+    print("user disconnected")
+    emit("disconnect", f"user {request.sid} disconnected", broadcast=True)
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=os.environ.get('PORT', 3000))
+    socketio.run(app, host='localhost', port=os.environ.get('PORT', 3000))
