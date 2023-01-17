@@ -7,10 +7,12 @@ from models import db, User, Post
 from pprint import pprint
 from flask_socketio import SocketIO, emit
 import platform
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 
 app = Flask(__name__, static_folder='public')
 CORS(app, origins=['*'])
 app.config.from_object(Config)
+jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -44,6 +46,22 @@ def users():
     return jsonify(user.to_dict()), 201
 
 
+@app.post('/login')
+def login():
+    data = request.form
+    user = User.query.filter_by(email=data['email']).first()
+    if not user:
+        return jsonify({'error': 'No user found'}), 404
+    given_password = data['password']
+    if user.password == given_password:
+        # encode JWT as the token variable, signing it with our application's secret key
+        # we store only what the token will need while identifying the users on any given request
+        token = create_access_token(identity=user.id)
+        return jsonify({'user': user.to_dict(), 'token': token})
+    else:
+        return jsonify({'error': 'Invalid email or password'}), 422
+
+
 @app.get('/users/<int:id>')
 def show(id):
     user = User.query.get(id)
@@ -69,12 +87,17 @@ def update_user(id):
     return jsonify(user.to_dict())
 
 
+# This is how we protect routes. Ideally you'd check to ensure that the current_user id
+# is the same as the id of the user who owns the resources being deleted
 @app.delete('/users/<int:id>')
+@jwt_required()
 def delete_user(id):
     user = User.query.get(id)
     if user:
-        db.session.delete(user)
-        db.session.commit()
+        # db.session.delete(user)
+        # db.session.commit()
+        current_user = get_jwt_identity() # get the current user ID (not the object itself)
+        print('deleting user')
         return jsonify(user.to_dict())
     else:
         return {'error': 'No user found'}, 404    
