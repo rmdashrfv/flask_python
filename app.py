@@ -7,15 +7,32 @@ from models import db, User, Post
 from pprint import pprint
 from flask_socketio import SocketIO, emit
 import platform
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+import jwt
 
+SECRET_KEY = 'burntheboats'
 app = Flask(__name__, static_folder='public')
 CORS(app, origins=['*'])
 app.config.from_object(Config)
-jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins='*')
+
+def authenticated(func):
+    def wrapper(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({'message': 'No authentication token provided'}), 401
+        try:
+            # decode the incoming JWT using our application's secret key
+            decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            current_user = User.query.get(decoded_user['user_id'])
+            if not current_user:
+                return jsonify({'message': 'User token is invalid'}), 401
+            return func(*args, current_user=current_user, **kwargs)
+        except Exception as e:
+            print(e)
+            return jsonify({'error': e}), 500
+    return wrapper
 
 # In Rails, controller actions and routes are separate
 # Here in Flask, they are put together
@@ -56,7 +73,7 @@ def login():
     if user.password == given_password:
         # encode JWT as the token variable, signing it with our application's secret key
         # we store only what the token will need while identifying the users on any given request
-        token = create_access_token(identity=user.id)
+        token = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256')
         return jsonify({'user': user.to_dict(), 'token': token})
     else:
         return jsonify({'error': 'Invalid email or password'}), 422
@@ -90,15 +107,16 @@ def update_user(id):
 # This is how we protect routes. Ideally you'd check to ensure that the current_user id
 # is the same as the id of the user who owns the resources being deleted
 @app.delete('/users/<int:id>')
-@jwt_required()
-def delete_user(id):
+@authenticated
+def delete_user(id, current_user):
     user = User.query.get(id)
     if user:
-        # db.session.delete(user)
-        # db.session.commit()
-        current_user = get_jwt_identity() # get the current user ID (not the object itself)
-        print('deleting user')
-        return jsonify(user.to_dict())
+        if user.id == current_user.id:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify(user.to_dict())
+        else:
+            return jsonify({'error': 'You cannot access this resource'}), 401
     else:
         return {'error': 'No user found'}, 404    
 
