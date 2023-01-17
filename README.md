@@ -7,7 +7,7 @@ You will need to set up a database for this web server template. Ideally, Postgr
 2. Create a database
 3. Install [gunicorn](https://gunicorn.org/) (G-Unit Unicorn web server by 50 Cent)
 4. Install dependencies
-5. Start the server with `gunicorn app:app` (If you are using WebSockets, you must run your server using `flask run --port=PORT`)
+5. Start the server with `gunicorn app:app` (If you are using WebSockets, you must run your server using `flask run --port=PORT --debugger`)
 
 **Install your dependencies**
 
