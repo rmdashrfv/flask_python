@@ -9,7 +9,7 @@ from flask_socketio import SocketIO, emit
 import platform
 import jwt
 
-SECRET_KEY = 'burntheboats'
+
 app = Flask(__name__, static_folder='public')
 CORS(app, origins=['*'])
 app.config.from_object(Config)
@@ -24,7 +24,7 @@ def authenticated(func):
             return jsonify({'message': 'No authentication token provided'}), 401
         try:
             # decode the incoming JWT using our application's secret key
-            decoded_user = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            decoded_user = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
             current_user = User.query.get(decoded_user['user_id'])
             if not current_user:
                 return jsonify({'message': 'User token is invalid'}), 401
@@ -73,7 +73,7 @@ def login():
     if user.password == given_password:
         # encode JWT as the token variable, signing it with our application's secret key
         # we store only what the token will need while identifying the users on any given request
-        token = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode({'user_id': user.id}, Config.SECRET_KEY, algorithm='HS256')
         return jsonify({'user': user.to_dict(), 'token': token})
     else:
         return jsonify({'error': 'Invalid email or password'}), 422
