@@ -31,7 +31,7 @@ def authenticated(func):
             return func(*args, current_user=current_user, **kwargs)
         except Exception as e:
             print(e)
-            return jsonify({'error': e}), 500
+            return jsonify({'error': str(e)}), 500
     return wrapper
 
 # In Rails, controller actions and routes are separate
