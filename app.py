@@ -3,9 +3,10 @@ from flask import Flask, send_file, request, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from config import Config
-from models import db, User, Post
+from models import *
 from pprint import pprint
 from flask_socketio import SocketIO, emit
+from functools import wraps
 import platform
 import jwt
 
@@ -18,6 +19,7 @@ migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 def authenticated(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         token = request.headers.get('Authorization')
         if not token:
@@ -80,7 +82,8 @@ def login():
 
 
 @app.get('/users/<int:id>')
-def show(id):
+@authenticated
+def show(id, current_user):
     user = User.query.get(id)
     if user:
         return jsonify(user.to_dict())
