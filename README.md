@@ -61,6 +61,7 @@ flask db init
 flask db current
 flask db upgrade
 flask db downgrade
+python seeds.py # to seed the database
 ```
 
 ## Database Workflow

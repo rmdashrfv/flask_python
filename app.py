@@ -10,7 +10,6 @@ from functools import wraps
 import platform
 import jwt
 
-
 app = Flask(__name__, static_folder='public')
 CORS(app, origins=['*'])
 app.config.from_object(Config)
