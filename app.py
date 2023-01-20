@@ -38,6 +38,7 @@ def authenticated(func):
 # In Rails, controller actions and routes are separate
 # Here in Flask, they are put together
 
+
 @app.get('/')
 def home():
     return send_file('welcome.html')

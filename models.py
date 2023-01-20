@@ -1,11 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import mixins
 
 db = SQLAlchemy() # create an instance of a database connection
 migrate = Migrate(db) # associate migration functions to it
 
 # This ORM has the migration and the model together
-class User(db.Model):
+class User(db.Model, mixins.DatabaseObject):
     # This is the migration part
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)

@@ -121,3 +121,8 @@ db.session.commit()
 
 ### Authentication
 This template is currently using a simple JWT auth implementation + a custom route decorator to manage sessions. It's not recommended for production use as is.
+
+
+### Deployment
+
+1. Generate a secure SECRET_KEY with the command `python -c 'import secrets; print(secrets.token_hex())'`
