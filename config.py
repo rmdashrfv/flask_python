@@ -5,6 +5,7 @@ import os
 # if the variable is not found/undefined, set the second string as the value
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'burntheboats')
+    DEFAULT_TIMEZONE = 'US/Eastern'
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///development.sqlite3')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = True

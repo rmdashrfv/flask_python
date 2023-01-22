@@ -7,7 +7,6 @@ from config import Config
 from models import *
 from flask_socketio import SocketIO, emit
 import platform
-import jwt
 
 app = Flask(__name__, static_folder='public')
 CORS(app, origins=['*'])
