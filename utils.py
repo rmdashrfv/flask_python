@@ -9,7 +9,7 @@ def create_access_token(user_id):
     now = datetime.now()
     return jwt.encode(
         {
-            'user_id': user_id,
+            'sub': user_id,
             'iat': int(round(now.timestamp())),
             'exp': round((now + timedelta(hours=1)).timestamp())
         },
@@ -27,9 +27,7 @@ def authenticate(func):
             decoded_data = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
             if not decoded_data['exp']:
                 return jsonify({'error': 'Invalid token. Missing token expiry'}), 401
-            if (datetime.now().timestamp() > decoded_data['exp']):
-                return jsonify({'error': 'Auth token is expired'}), 401
-            current_user = User.query.get(decoded_data['user_id'])
+            current_user = User.query.get(decoded_data['sub'])
             if not current_user:
                 return jsonify({'error': 'User token is invalid'}), 401
             return func(*args, current_user=current_user, **kwargs)
