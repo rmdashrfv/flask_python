@@ -1,12 +1,11 @@
 import os
 from flask import Flask, send_file, request, jsonify
+from utils import authenticate, create_access_token
 from flask_migrate import Migrate
 from flask_cors import CORS
 from config import Config
 from models import *
-from pprint import pprint
 from flask_socketio import SocketIO, emit
-from functools import wraps
 import platform
 import jwt
 
@@ -16,28 +15,6 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins='*')
-
-def authenticated(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'message': 'No authentication token provided'}), 401
-        try:
-            # decode the incoming JWT using our application's secret key
-            decoded_user = jwt.decode(token, Config.SECRET_KEY, algorithms=['HS256'])
-            current_user = User.query.get(decoded_user['user_id'])
-            if not current_user:
-                return jsonify({'message': 'User token is invalid'}), 401
-            return func(*args, current_user=current_user, **kwargs)
-        except Exception as e:
-            print(e)
-            return jsonify({'error': str(e)}), 500
-    return wrapper
-
-# In Rails, controller actions and routes are separate
-# Here in Flask, they are put together
-
 
 @app.get('/')
 def home():
@@ -68,21 +45,21 @@ def users():
 @app.post('/login')
 def login():
     data = request.form
-    user = User.query.filter_by(email=data['email']).first()
+    user = User.query.filter_by(email=data.get('email')).first()
     if not user:
         return jsonify({'error': 'No user found'}), 404
-    given_password = data['password']
+    given_password = data.get('password')
     if user.password == given_password:
         # encode JWT as the token variable, signing it with our application's secret key
         # we store only what the token will need while identifying the users on any given request
-        token = jwt.encode({'user_id': user.id}, Config.SECRET_KEY, algorithm='HS256')
+        token = create_access_token(user.id)
         return jsonify({'user': user.to_dict(), 'token': token})
     else:
         return jsonify({'error': 'Invalid email or password'}), 422
 
 
 @app.get('/users/<int:id>')
-@authenticated
+@authenticate
 def show(id, current_user):
     user = User.query.get(id)
     if user:
@@ -110,7 +87,7 @@ def update_user(id):
 # This is how we protect routes. Ideally you'd check to ensure that the current_user id
 # is the same as the id of the user who owns the resources being deleted
 @app.delete('/users/<int:id>')
-@authenticated
+@authenticate
 def delete_user(id, current_user):
     user = User.query.get(id)
     if user:
