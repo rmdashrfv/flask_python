@@ -1,12 +1,13 @@
-import uuid
+from typing import Callable
 from flask import request, jsonify
 from functools import wraps
 from config import Config
 from models import User
 from datetime import datetime, timedelta
+import uuid
 import jwt
 
-def create_access_token(user_id):
+def create_access_token(user_id: int) -> str:
     now = datetime.now()
     return jwt.encode(
         {
@@ -14,12 +15,12 @@ def create_access_token(user_id):
             'iat': int(round(now.timestamp())),
             'exp': round((now + timedelta(hours=1)).timestamp()),
             'jti': str(uuid.uuid4()),
-            'uid': ''
+            'gid': generate_gid()
         },
         Config.SECRET_KEY, algorithm='HS256'
     )
 
-def authenticate(func):
+def authenticate(func: Callable[[str], dict]) -> dict:
     '''
     Require user authentication to access a decorated endpoint via access tokens. Also gives the function access to the
     currently authenticated user (object) by passing the `current_user` argument into the endpoint function, which is useful
@@ -45,6 +46,6 @@ def authenticate(func):
     return wrapper
 
 
-def generate_uid():
-    '''Create an anonymous unique ID to attach to access tokens'''
-    pass
+def generate_gid() -> None:
+    '''Create an ambiguous Global ID to attach to access tokens'''
+    return None
