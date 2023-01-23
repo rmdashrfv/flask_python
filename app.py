@@ -118,7 +118,7 @@ def connected():
 def handle_message(data):
     '''This function runs whenever a client sends a socket message to be broadcast'''
     print(f'Message from Client {request.sid} : ', data)
-    emit('data', {'data': 'data', 'id': request.sid}, broadcast=True)
+    emit('data', {'data': data, 'id': request.sid}, broadcast=True)
 
 
 @socketio.on("disconnect")
