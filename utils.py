@@ -1,3 +1,4 @@
+import uuid
 from flask import request, jsonify
 from functools import wraps
 from config import Config
@@ -11,12 +12,19 @@ def create_access_token(user_id):
         {
             'sub': user_id,
             'iat': int(round(now.timestamp())),
-            'exp': round((now + timedelta(hours=1)).timestamp())
+            'exp': round((now + timedelta(hours=1)).timestamp()),
+            'jti': str(uuid.uuid4()),
+            'uid': ''
         },
         Config.SECRET_KEY, algorithm='HS256'
     )
 
 def authenticate(func):
+    '''
+    Require user authentication to access a decorated endpoint via access tokens. Also gives the function access to the
+    currently authenticated user (object) by passing the `current_user` argument into the endpoint function, which is useful
+    for easy authorization checks.
+    '''
     @wraps(func)
     def wrapper(*args, **kwargs):
         token = request.headers.get('Authorization')
@@ -35,3 +43,8 @@ def authenticate(func):
             print(e)
             return jsonify({'error': str(e)}), 500
     return wrapper
+
+
+def generate_uid():
+    '''Create an anonymous unique ID to attach to access tokens'''
+    pass

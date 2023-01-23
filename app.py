@@ -15,6 +15,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+
 @app.get('/')
 def home():
     return send_file('welcome.html')
@@ -59,7 +60,7 @@ def login():
 
 @app.get('/users/<int:id>')
 @authenticate
-def show(id, current_user):
+def show(id):
     user = User.query.get(id)
     if user:
         return jsonify(user.to_dict())
