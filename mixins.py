@@ -1,3 +1,5 @@
+from models import db
+
 class DatabaseObject:
     '''Adds ActiveRecord-like methods to a Model'''
 
@@ -9,3 +11,7 @@ class DatabaseObject:
         for key in keys:
             if hasattr(self, key):
                 setattr(self, key, attrs[key])
+
+    def global_id(self):
+        '''Create an ambiguous Global ID for use with external applications'''
+        pass

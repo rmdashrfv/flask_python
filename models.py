@@ -62,3 +62,17 @@ class Post(db.Model):
 
     def __repr__(self):
         return f'<Post {self.id}>'
+
+
+class AccessTokenWhiteList(db.Model):
+    __tablename__ =  'accesstokenwhitelist'
+    id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.String(255), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
+
+    def __init__(self, uid: str, user_id: int):
+        self.uid = uid
+        self.user_id = user_id

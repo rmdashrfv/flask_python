@@ -2,20 +2,25 @@ from typing import Callable
 from flask import request, jsonify
 from functools import wraps
 from config import Config
-from models import User
+from models import User, AccessTokenWhiteList as WL
 from datetime import datetime, timedelta
 import uuid
 import jwt
 
 def create_access_token(user_id: int) -> str:
+    '''
+    Create an access token in the form of a JSON web token for authentication and authorization. The UID claim is
+    for if you decide to use a token whitelist/blacklist
+    '''
     now = datetime.now()
+    token_id = generate_uid()
     return jwt.encode(
         {
             'sub': user_id,
             'iat': int(round(now.timestamp())),
             'exp': round((now + timedelta(hours=1)).timestamp()),
             'jti': str(uuid.uuid4()),
-            'gid': generate_gid()
+            'uid': token_id
         },
         Config.SECRET_KEY, algorithm='HS256'
     )
@@ -46,6 +51,6 @@ def authenticate(func: Callable[[str], dict]) -> dict:
     return wrapper
 
 
-def generate_gid() -> None:
-    '''Create an ambiguous Global ID to attach to access tokens'''
-    return None
+def generate_uid() -> str:
+    '''Create a unique identifier for access tokens'''
+    return ''
