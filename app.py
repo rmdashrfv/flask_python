@@ -50,8 +50,6 @@ def login():
         return jsonify({'error': 'No user found'}), 404
     given_password = data.get('password')
     if user.password == given_password:
-        # encode JWT as the token variable, signing it with our application's secret key
-        # we store only what the token will need while identifying the users on any given request
         token = create_access_token(user.id)
         return jsonify({'user': user.to_dict(), 'token': token})
     else:
@@ -68,7 +66,6 @@ def show(id):
         return {}, 404
 
 
-# run user.to_dict() for every user in users
 @app.get('/users')
 def all_users():
     users = User.query.all()
@@ -79,13 +76,11 @@ def all_users():
 @app.patch('/users/<int:id>')
 def update_user(id):
     user = User.query.get_or_404(id)
-    user.username = request.form['username'] # currently only updates the username. Add more as you see fit
+    user.username = request.form['username']
     db.session.commit()
     return jsonify(user.to_dict())
 
 
-# This is how we protect routes. Ideally you'd check to ensure that the current_user id
-# is the same as the id of the user who owns the resources being deleted
 @app.delete('/users/<int:id>')
 @authenticate
 def delete_user(id, current_user):
