@@ -1,5 +1,3 @@
-from models import db
-
 class DatabaseObject:
     '''Adds ActiveRecord-like methods to a Model'''
 
